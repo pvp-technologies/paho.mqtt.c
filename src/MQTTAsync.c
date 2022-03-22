@@ -107,6 +107,7 @@ static thread_id_type sendThread_id = 0,
 
 #if defined(WIN32) || defined(WIN64)
 static mutex_type mqttasync_mutex = NULL;
+static mutex_type mqttasyncgetid_mutex = NULL;
 static mutex_type socket_mutex = NULL;
 static mutex_type mqttcommand_mutex = NULL;
 static sem_type send_sem = NULL;
@@ -124,6 +125,7 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 			if (mqttasync_mutex == NULL)
 			{
 				mqttasync_mutex = CreateMutex(NULL, 0, NULL);
+				mqttasyncgetid_mutex = CreateMutex(NULL, 0, NULL);
 				mqttcommand_mutex = CreateMutex(NULL, 0, NULL);
 				send_sem = CreateEvent(
 		        NULL,               /* default security attributes */
@@ -149,6 +151,9 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 static pthread_mutex_t mqttasync_mutex_store = PTHREAD_MUTEX_INITIALIZER;
 static mutex_type mqttasync_mutex = &mqttasync_mutex_store;
 
+static pthread_mutex_t mqttasyncgetid_mutex_store = PTHREAD_MUTEX_INITIALIZER;
+static mutex_type mqttasyncgetid_mutex = &mqttasyncgetid_mutex_store;
+
 static pthread_mutex_t socket_mutex_store = PTHREAD_MUTEX_INITIALIZER;
 static mutex_type socket_mutex = &socket_mutex_store;
 
@@ -171,6 +176,8 @@ void MQTTAsync_init(void)
 #endif
 	if ((rc = pthread_mutex_init(mqttasync_mutex, &attr)) != 0)
 		printf("MQTTAsync: error %d initializing async_mutex\n", rc);
+	if ((rc = pthread_mutex_init(mqttasyncgetid_mutex, &attr)) != 0)
+		printf("MQTTAsync: error %d initializing mqttasyncgetid_mutex\n", rc);
 	if ((rc = pthread_mutex_init(mqttcommand_mutex, &attr)) != 0)
 		printf("MQTTAsync: error %d initializing command_mutex\n", rc);
 	if ((rc = pthread_mutex_init(socket_mutex, &attr)) != 0)
@@ -1495,6 +1502,7 @@ static int MQTTAsync_processCommand(void)
 			else
 				command->command.details.conn.MQTTVersion = command->client->c->MQTTVersion;
 
+			MQTTAsync_unlock_mutex(mqttasync_mutex);
 			Log(TRACE_PROTOCOL, -1, "Connecting to serverURI %s with MQTT version %d", serverURI, command->command.details.conn.MQTTVersion);
 #if defined(OPENSSL)
 			rc = MQTTProtocol_connect(serverURI, command->client->c, command->client->ssl, command->client->websocket,
@@ -1503,6 +1511,8 @@ static int MQTTAsync_processCommand(void)
 			rc = MQTTProtocol_connect(serverURI, command->client->c, command->client->websocket,
 					command->command.details.conn.MQTTVersion, command->client->connectProps, command->client->willProps);
 #endif
+
+			MQTTAsync_lock_mutex(mqttasync_mutex);
 			if (command->client->c->connect_state == NOT_IN_PROGRESS)
 				rc = SOCKET_ERROR;
 
@@ -3234,7 +3244,7 @@ static int MQTTAsync_assignMsgId(MQTTAsyncs* m)
 	thread_id = Thread_getid();
 	if (thread_id != sendThread_id && thread_id != receiveThread_id)
 	{
-		MQTTAsync_lock_mutex(mqttasync_mutex);
+		MQTTAsync_lock_mutex(mqttasyncgetid_mutex); // mqttasync_mutex mqttasyncgetid_mutex
 		locked = 1;
 	}
 
@@ -3252,7 +3262,7 @@ static int MQTTAsync_assignMsgId(MQTTAsyncs* m)
 	if (msgid != 0)
 		m->c->msgID = msgid;
 	if (locked)
-		MQTTAsync_unlock_mutex(mqttasync_mutex);
+		MQTTAsync_unlock_mutex(mqttasyncgetid_mutex); // mqttasync_mutex mqttasyncgetid_mutex
 	FUNC_EXIT_RC(msgid);
 	return msgid;
 }
