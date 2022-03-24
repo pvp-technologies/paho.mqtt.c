@@ -3244,7 +3244,7 @@ static int MQTTAsync_assignMsgId(MQTTAsyncs* m)
 	thread_id = Thread_getid();
 	if (thread_id != sendThread_id && thread_id != receiveThread_id)
 	{
-		MQTTAsync_lock_mutex(mqttasyncgetid_mutex); // mqttasync_mutex mqttasyncgetid_mutex
+		MQTTAsync_lock_mutex(mqttasync_mutex); // mqttasync_mutex mqttasyncgetid_mutex
 		locked = 1;
 	}
 
@@ -3262,7 +3262,7 @@ static int MQTTAsync_assignMsgId(MQTTAsyncs* m)
 	if (msgid != 0)
 		m->c->msgID = msgid;
 	if (locked)
-		MQTTAsync_unlock_mutex(mqttasyncgetid_mutex); // mqttasync_mutex mqttasyncgetid_mutex
+		MQTTAsync_unlock_mutex(mqttasync_mutex); // mqttasync_mutex mqttasyncgetid_mutex
 	FUNC_EXIT_RC(msgid);
 	return msgid;
 }
