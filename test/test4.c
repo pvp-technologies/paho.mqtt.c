@@ -54,10 +54,10 @@ struct Options
 	int iterations;
 } options =
 {
-	"mqtt.eclipse.org:1883",
+	"tcp://localhost:1883",
 	0,
 	-1,
-	10000,
+	10,
 	MQTTVERSION_DEFAULT,
 	1,
 };
@@ -1236,7 +1236,7 @@ Test7: Pending tokens
 *********************************************************************/
 int test7(struct Options options)
 {
-	int subsqos = 2;
+	int subsqos = 1;
 	MQTTAsync c;
 	MQTTAsync_connectOptions opts = MQTTAsync_connectOptions_initializer;
 	MQTTAsync_willOptions wopts = MQTTAsync_willOptions_initializer;
@@ -1245,15 +1245,17 @@ int test7(struct Options options)
 	MQTTAsync_responseOptions ropts = MQTTAsync_responseOptions_initializer;
 	MQTTAsync_disconnectOptions dopts = MQTTAsync_disconnectOptions_initializer;
 	MQTTAsync_token* tokens = NULL;
-	int msg_count = 6;
+	int msg_count = 500;// 6 1000
 
 	MyLog(LOGA_INFO, "Starting test 7 - pending tokens");
 	fprintf(xml, "<testcase classname=\"test4\" name=\"pending tokens\"");
 	global_start_time = start_clock();
 	test_finished = 0;
+	MQTTAsync_createOptions create_opts = MQTTAsync_createOptions_initializer;
+  	create_opts.maxBufferedMessages     = 10;
+  	create_opts.sendWhileDisconnected   = 1;
+	rc = MQTTAsync_createWithOptions(&c, options.connection, "async_test7", MQTTCLIENT_PERSISTENCE_DEFAULT, "/home/r1/", &create_opts);
 
-	rc = MQTTAsync_create(&c, options.connection, "async_test7",
-			MQTTCLIENT_PERSISTENCE_DEFAULT, NULL);
 	assert("good rc from create",  rc == MQTTASYNC_SUCCESS, "rc was %d\n", rc);
 	if (rc != MQTTASYNC_SUCCESS)
 	{
@@ -1271,7 +1273,7 @@ int test7(struct Options options)
 
 	opts.will = &wopts;
 	opts.will->message = "will message";
-	opts.will->qos = 1;
+	opts.will->qos = subsqos;
 	opts.will->retained = 0;
 	opts.will->topicName = "will topic";
 	opts.will = NULL;
@@ -1314,7 +1316,7 @@ int test7(struct Options options)
 
 	pubmsg.payload = "a much longer message that we can shorten to the extent that we need to payload up to 11";
 	pubmsg.payloadlen = 11;
-	pubmsg.qos = 2;
+	pubmsg.qos = subsqos;
 	pubmsg.retained = 0;
 	rc = MQTTAsync_send(c, test_topic, pubmsg.payloadlen, pubmsg.payload, pubmsg.qos, pubmsg.retained, &ropts);
 	MyLog(LOGA_DEBUG, "Token was %d", ropts.token);
@@ -1327,7 +1329,7 @@ int test7(struct Options options)
 
 	test7_messageCount = 0;
 	int i = 0;
-	pubmsg.qos = 2;
+	pubmsg.qos = subsqos;
 	for (i = 0; i < msg_count; ++i)
 	{
 		pubmsg.payload = "a much longer message that we can shorten to the extent that we need to payload up to 11";
@@ -1360,6 +1362,7 @@ int test7(struct Options options)
 
 	MQTTAsync_setTraceLevel(MQTTASYNC_TRACE_ERROR);
 	rc = MQTTAsync_create(&c, options.connection, "async_test7", MQTTCLIENT_PERSISTENCE_DEFAULT, NULL);
+	rc = MQTTAsync_createWithOptions(&c, options.connection, "async_test7", MQTTCLIENT_PERSISTENCE_DEFAULT, "/home/r1/", &create_opts);
 	assert("good rc from create",  rc == MQTTASYNC_SUCCESS, "rc was %d\n", rc);
 	if (rc != MQTTASYNC_SUCCESS)
 	{

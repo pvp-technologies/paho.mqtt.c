@@ -68,7 +68,7 @@ struct Options
 	int iterations;
 } options =
 {
-	"m2m.eclipse.org:1883",
+	"localhost:1883",
 	NULL,
 	0,
 	0,

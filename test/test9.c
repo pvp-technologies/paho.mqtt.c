@@ -56,7 +56,7 @@ struct Options
 	int test_no;
 } options =
 {
-	"mqtt.eclipse.org:1883",
+	"localhost:1883",
 	"localhost:1883",
 	0,
 	0,
@@ -508,7 +508,7 @@ int test1(struct Options options)
 	}
 
 	/* wait for will message */
-	while (!test1_will_message_received && ++count < 10000)
+	while (!test1_will_message_received && ++count < 100)
 		MySleep(100);
 
 	MyLog(LOGA_DEBUG, "Now we can send some messages to be buffered");
@@ -536,11 +536,11 @@ int test1(struct Options options)
  	assert("Good rc from reconnect", rc == MQTTASYNC_SUCCESS, "rc was %d ", rc);
 
 	/* wait for client to be reconnected */
-	while (!test1c_connected && ++count < 10000)
+	while (!test1c_connected && ++count < 100)
 		MySleep(100);
 
 	/* wait for success or failure callback */
-	while (test1_messages_received < 3 && ++count < 10000)
+	while (test1_messages_received < 3 && ++count < 100)
 		MySleep(100);
 
  	waitForNoPendingTokens(c);
@@ -737,7 +737,7 @@ int test2(struct Options options)
 
 	/* wait until d is ready: connected and subscribed */
 	count = 0;
-	while (!test2dReady && ++count < 10000)
+	while (!test2dReady && ++count < 100)
 		MySleep(100);
 	assert("Count should be less than 10000", count < 10000, "count was %d", count); /* wrong */
 
@@ -767,7 +767,7 @@ int test2(struct Options options)
 	}
 
 	/* wait for will message */
-	while (!test2_will_message_received && ++count < 10000)
+	while (!test2_will_message_received && ++count < 100)
 		MySleep(100);
 
 	MyLog(LOGA_DEBUG, "Now we can send some messages to be buffered");
@@ -795,11 +795,11 @@ int test2(struct Options options)
  	assert("Good rc from reconnect", rc == MQTTASYNC_SUCCESS, "rc was %d ", rc);
 
 	/* wait for client to be reconnected */
-	while (!test2c_connected && ++count < 10000)
+	while (!test2c_connected && ++count < 100)
 		MySleep(100);
 
 	/* wait for success or failure callback */
-	while (test2_messages_received < 3 && ++count < 10000)
+	while (test2_messages_received < 3 && ++count < 100)
 		MySleep(100);
 
 	waitForNoPendingTokens(c);
@@ -997,7 +997,7 @@ int test3(struct Options options)
 
 	/* wait until d is ready: connected and subscribed */
 	count = 0;
-	while (!test3dReady && ++count < 10000)
+	while (!test3dReady && ++count < 100)
 		MySleep(100);
 	assert("Count should be less than 10000", count < 10000, "count was %d", count); /* wrong */
 
@@ -1026,7 +1026,7 @@ int test3(struct Options options)
 	}
 
 	/* wait for will message */
-	while (!test3_will_message_received && ++count < 10000)
+	while (!test3_will_message_received && ++count < 100)
 		MySleep(100);
 
 	MyLog(LOGA_DEBUG, "Now we can send some messages to be buffered");
@@ -1051,11 +1051,11 @@ int test3(struct Options options)
 	assert3PendingTokens(c);
 
 	/* wait for client to be reconnected */
-	while (!test3c_connected && ++count < 10000)
+	while (!test3c_connected && ++count < 100)
 		MySleep(100);
 
 	/* wait for success or failure callback */
-	while (test3_messages_received < 3 && ++count < 10000)
+	while (test3_messages_received < 3 && ++count < 100)
 		MySleep(100);
 
 	waitForNoPendingTokens(c);
@@ -1252,7 +1252,7 @@ int test4(struct Options options)
 
 	/* wait until d is ready: connected and subscribed */
 	count = 0;
-	while (!test4dReady && ++count < 10000)
+	while (!test4dReady && ++count < 100)
 		MySleep(100);
 	assert("Count should be less than 10000", count < 10000, "count was %d", count); /* wrong */
 
@@ -1283,7 +1283,7 @@ int test4(struct Options options)
 	}
 
 	/* wait for will message */
-	while (!test4_will_message_received && ++count < 10000)
+	while (!test4_will_message_received && ++count < 100)
 		MySleep(100);
 
 	MyLog(LOGA_DEBUG, "Now we can send some messages to be buffered");
@@ -1308,11 +1308,11 @@ int test4(struct Options options)
 	assert3PendingTokens(c);
 
 	/* wait for client to be reconnected */
-	while (!test4c_connected && ++count < 10000)
+	while (!test4c_connected && ++count < 100)
 		MySleep(100);
 
 	/* wait for success or failure callback */
-	while (test4_messages_received < 3 && ++count < 10000)
+	while (test4_messages_received < 3 && ++count < 100)
 		MySleep(100);
 
 	waitForNoPendingTokens(c);
@@ -1509,7 +1509,7 @@ int test5(struct Options options)
 
 	/* wait until d is ready: connected and subscribed */
 	count = 0;
-	while (!test5dReady && ++count < 10000)
+	while (!test5dReady && ++count < 100)
 		MySleep(100);
 	assert("Count should be less than 10000", count < 10000, "count was %d", count); /* wrong */
 
@@ -1537,7 +1537,7 @@ int test5(struct Options options)
 	}
 
 	/* wait for will message */
-	while (!test5_will_message_received && ++count < 10000)
+	while (!test5_will_message_received && ++count < 100)
 		MySleep(100);
 
 	MyLog(LOGA_DEBUG, "Now we can send some messages to be buffered");
@@ -1568,11 +1568,11 @@ int test5(struct Options options)
  	assert("Good rc from reconnect", rc == MQTTASYNC_SUCCESS, "rc was %d ", rc);
 
 	/* wait for client to be reconnected */
-	while (!test5c_connected && ++count < 10000)
+	while (!test5c_connected && ++count < 100)
 		MySleep(100);
 
 	/* wait for success or failure callback */
-	while (test5_messages_received < 3 && ++count < 10000)
+	while (test5_messages_received < 3 && ++count < 100)
 		MySleep(100);
 
 	waitForNoPendingTokens(c);
@@ -1668,7 +1668,7 @@ int test6(struct Options options)
 
 	/* wait until d is ready: connected and subscribed */
 	count = 0;
-	while (!test5dReady && ++count < 10000)
+	while (!test5dReady && ++count < 100)
 		MySleep(100);
 	assert("Count should be less than 10000", count < 10000, "count was %d", count); /* wrong */
 
@@ -1697,7 +1697,7 @@ int test6(struct Options options)
 	}
 
 	/* wait for will message */
-	while (!test5_will_message_received && ++count < 10000)
+	while (!test5_will_message_received && ++count < 100)
 		MySleep(100);
 
 	MyLog(LOGA_DEBUG, "Now we can send some messages to be buffered");
@@ -1728,11 +1728,11 @@ int test6(struct Options options)
  	assert("Good rc from reconnect", rc == MQTTASYNC_SUCCESS, "rc was %d ", rc);
 
 	/* wait for client to be reconnected */
-	while (!test5c_connected && ++count < 10000)
+	while (!test5c_connected && ++count < 100)
 		MySleep(100);
 
 	/* wait for success or failure callback */
-	while (test5_messages_received < 3 && ++count < 10000)
+	while (test5_messages_received < 3 && ++count < 100)
 		MySleep(100);
 
 	waitForNoPendingTokens(c);
@@ -1920,7 +1920,7 @@ int test7(struct Options options)
 
 	/* wait until d is ready: connected and subscribed */
 	count = 0;
-	while (!test7dReady && ++count < 10000)
+	while (!test7dReady && ++count < 100)
 	{
 		if (test7Finished)
 		  goto exit;
@@ -1956,7 +1956,7 @@ int test7(struct Options options)
 	}
 
 	count = 0;
-	while (!test7c_connected && ++count < 10000)
+	while (!test7c_connected && ++count < 100)
 		MySleep(100);
 	assert("Count should be less than 10000", count < 10000, "count was %d", count); /* wrong */
 

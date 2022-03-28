@@ -2080,10 +2080,10 @@ int main(int argc, char** argv)
 {
 	int rc = -1;
  	int (*tests[])() = {NULL,
- 		test_client_topic_aliases,
+ 		//test_client_topic_aliases,
 		test_server_topic_aliases,
 		test_subscription_ids,
-		test_flow_control,
+		//test_flow_control,
 		test_error_reporting,
 		test_qos_1_2_errors,
 		test_request_response,

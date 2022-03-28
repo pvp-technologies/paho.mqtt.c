@@ -61,7 +61,7 @@ struct
 	int persistence;
 } opts =
 {
-	"tcp://localhost:1884",
+	"tcp://localhost:1883",
 	NULL,
 	0,
 	"tcp://localhost:7777",
